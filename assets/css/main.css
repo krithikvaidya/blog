@@ -24,6 +24,11 @@ body {
   line-height: 1.75rem;
 }
 
+::selection {
+  background: aquamarine;
+  color: black;
+}
+
 @media (max-width: 30em) {
   body {
     font-size: 14px;
