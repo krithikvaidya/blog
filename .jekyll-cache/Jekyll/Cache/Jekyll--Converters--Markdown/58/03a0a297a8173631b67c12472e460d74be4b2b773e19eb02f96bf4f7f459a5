@@ -1,0 +1,323 @@
+I"rT<p><strong>Note</strong>: This is a write-up for a recruitment task of the Web Enthusiasts’ Club, NITK.
+The problem statement is given below.</p>
+
+<p><br /></p>
+
+<h2 id="problem-statement">Problem Statement:</h2>
+<ul>
+  <li>The objective is to dockerize a Node.js application and wrap the setup.</li>
+  <li>Install and set up the Node.js application. <a href="https://github.com/Eslamunto/ProductsApp">This</a> is the code for the app and <a href="https://github.com/Eslamunto/ProductsApp">this</a> is the tutorial on how to set it up. (No need to fully know how the app works or how to develop it, only the basics given in the tutorial.). You can use any other web application also instead of the one provided, under the condition that it uses an SQL database. In case you’re using a different app, please discuss it with the mentors first.</li>
+  <li>Dockerize the app and make sure the database of the app is made persistent.</li>
+  <li>Wrap the docker setup using docker-compose for easy management (Bonus task).</li>
+</ul>
+
+<p><br /></p>
+
+<h1 id="detailed-explanation">Detailed Explanation</h1>
+<p><br /></p>
+<h2 id="what-is-docker">What is Docker?</h2>
+
+<p>Before understanding what Docker is, we need to know what a Container is -
+<em>Containerization</em> is the process of packaging up an application with all the parts it needs to run - library functions, dependencies, and shipping it all out in a single package known as a <strong>Container</strong>. This ensures that the application can be quickly spun up for use in any other Linux based system, without needing to specifically install any required dependencies and dealing with other kinds of software conflicts. In other words, the containerization helps deploy applications as portable, self-sufficient containers. It ensures that the app always runs in the same environment, and that there aren’t any inconsistencies on different systems. Makes collabarative development easier</p>
+
+<p><strong>Docker</strong> is basically an open-source containerization technology that enables the creation and use of Linux containers. Docker containers are lightweight because they don’t need the extra load of a hypervisor (which is a hardware level virtualization technique that allows multiple guest operating systems (OS) to run on a single host system at the same time. Multiple instances of a variety of operating systems may share the virtualized hardware resources, which contrasts with the operating-system-level virtualization that containerization uses, where all instances must share a single kernel), but run directly within the host machine’s kernel. This means you can run more containers on a given hardware combination than if you were using virtual machines. You can even run Docker containers within host machines that are actually virtual machines! Docker is written in Go and takes advantage of several features of the Linux kernel to deliver its functionality.</p>
+
+<p>In a way, Docker similar to a virtual machine. However, rather than creating a whole virtual operating system on top of our host operating system, Docker allows applications to use the same Linux kernel as the system that they’re running on and only requires applications be shipped with things not already running on the host computer. This gives a significant performance boost and reduces the size of the containerized application, as compared to if it were to be run on a virtual machine.</p>
+
+<p>One of the most important features Docker offers is it’s instant startup time. A Docker container can be started within milliseconds, as opposed to waiting minutes for a virtual machine to boot.<br />
+<br /></p>
+
+<h1 id="our-application">Our application</h1>
+<p><br /></p>
+
+<h2 id="setup-of-the-application-to-be-containerized">Setup of the application to be containerized</h2>
+<p>Initially, we setup a Node.js app by following <a href="https://codeburst.io/writing-a-crud-app-with-node-js-and-mongodb-e0827cbbdafb">this</a> tutorial.
+However, we will setup our database a little differently.
+Replace</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>let dev_db_url = 'mongodb://someuser:abcd1234@ds123619.mlab.com:23619/productstutorial';
+let mongoDB = process.env.MONGODB_URI || dev_db_url;
+mongoose.connect(mongoDB);
+mongoose.Promise = global.Promise;
+let db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+</code></pre></div></div>
+<p>in the <em>app.js</em> file with</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mongoose
+  .connect(
+    'mongodb://mongo:27017/docker-node-mongo',
+    { useNewUrlParser: true }
+  )
+  .then(() =&gt; console.log('MongoDB Connected'))
+  .catch(err =&gt; console.log(err));
+</code></pre></div></div>
+<p>This is because we are not using a remote database; we will be using a database that runs locally within its own container named <em>mongo</em>. The name we give our database within mongo is <em>docker-node-mongo</em>.</p>
+
+<p>Also, open up the <em>package.json</em> file and add another key-value pair to the “scripts” dictionary -</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>"start": "node app.js"
+</code></pre></div></div>
+<p>So that the <em>package.json</em> file looks like this:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>...
+"scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" &amp;&amp; exit 1"
+},
+...
+</code></pre></div></div>
+<p>(The “test” parameter can be removed) .
+This just indicates what should happen when the <em>npm start</em> command is run (more on this later).</p>
+
+<h2 id="creating-the-files-required-for-dockerizing-this-application">Creating the files required for Dockerizing this application</h2>
+<p>First, we create a Dockerfile to setup our a container for our Node.js app and install all its dependencies. We will now run through what we’ll be writing in our Dockerfile:</p>
+
+<ol>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">FROM node:latest</code><br />
+This specifies the base image on which we wish to build on. It’ll look in the Docker Registry (https://hub.docker.com) for a matching image and download it to our system.</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">WORKDIR /usr/src/app</code><br />
+The WORKDIR instruction sets the working directory for any RUN, CMD, ENTRYPOINT, COPY and ADD instructions that follow it in the Dockerfile. If the WORKDIR doesn’t exist, it will be created.</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">COPY package*.json ./</code><br />
+This copies all files having the name package<em>.json (where * is the wildcard character, indicates that there can be any character(s) in that position) to our *WORKDIR</em> (which is reference by ./ since we already set our WORKDIR in the previous command).</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">RUN npm install</code><br />
+This runs the command <em>npm install</em> which looks in our <em>package.json</em> file (generated when we installed packages through <em>npm</em> and gave the <em>–save</em> parameter), and installs all the dependencies mentioned in it.</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">COPY . .</code><br />
+Copies all files and folders from the directory in which our Dockerfile resides to the WORKDIR of the container (excluding the files and folders mentioned in the <em>.dockerignore</em> file).</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">EXPOSE 3000</code><br />
+This statement is just for documenting which port(s) are intended to be published by our container (here, 3000), but does not actually map or open any ports.</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">CMD [ "npm", "start" ]</code><br />
+This runs the <em>npm start</em> command in our container, which looks in our <em>package.json</em> for the “scripts” key (similar to the below)</p>
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>"scripts": {
+ "start": "node app.js"
+},
+...
+</code></pre></div>    </div>
+    <p>and runs whatever command is specified by the “start” key.</p>
+  </li>
+</ol>
+
+<p>These commands specify how the images for the containers running our Node.js app will look like. However, we still haven’t dealt with the other container in our application - the container for our mongo database.</p>
+
+<h2 id="creating-the-docker-composeyml-file">Creating the docker-compose.yml file</h2>
+<p>We will be using docker-compose to spin up a container for our <em>mongo</em> container, as well as create a kind of ‘composite container’, combining our previously created container to this one. Here is a line-by-line explanation of our <em>docker-compose.yml</em>:</p>
+
+<ol>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">version: '3'</code><br />
+Specifies the docker compose file format. Version 3 is currently the latest version.</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">services:</code><br />
+Defines the services (one for our main <em>app</em> and another for <em>mongo</em>) that make up our app in so they can be run together in an isolated environment. We define two services - <em>app</em> and <em>mongo</em></p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">app:</code><br />
+The name of our first service</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">container_name: docker-node-mongo</code><br />
+The name of our first container</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">restart: always</code><br />
+Specifies that the container always restarts whenever requested. Other possible values are:<br />
+restart: “no”<br />
+restart: on-failure<br />
+restart: unless-stopped</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">build: .</code><br />
+Configuration options that are applied at build time. It basically tells Docker to look for a Dockerfile in the current directory, and use it to build the image.</p>
+  </li>
+  <li>Ports
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ports:    
+  '1234:3000'
+</code></pre></div>    </div>
+    <p>Maps port <em>3000</em> of our container to port <em>1234</em> of the host system.</p>
+  </li>
+  <li>
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>depends_on:
+  mongo
+</code></pre></div>    </div>
+    <p>Expresses dependency between our <em>app</em> service and another service named <em>mongo</em> (defined next in the same file). This means that the <em>mongo</em> service will be started before our app service starts.</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">mongo:</code><br />
+The beginning of the definition of our second service, named <em>mongo</em></p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">container_name: docker-node-mongo</code><br />
+The name of our second container</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">image: mongo</code><br />
+Use the <em>mongo</em> image(if not cached locally, will pull from Docker Hub) as the base image for our <em>mongo</em> container.</p>
+  </li>
+  <li>
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ports:
+  '27017:27017'
+</code></pre></div>    </div>
+    <p>Maps port <em>27017</em> of our container to port <em>27017</em> of the host system.</p>
+  </li>
+  <li>
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>volumes:
+  /data/db
+</code></pre></div>    </div>
+    <p>Containers are ephemeral and once a container is removed, it’s data is lost.
+The fundamental thing that we are trying to do is to separate out the container lifecycle from the data. Ideally we want to keep these separate so that the data generated is not destroyed or tied to the container lifecycle and can thus be reused. This is done using <em>volumes</em> in Docker</p>
+  </li>
+</ol>
+
+<p>As per the official documentation, there are 2 ways in which you can manage data in Docker:</p>
+<ul>
+  <li>Data volumes</li>
+  <li>Data volume containers</li>
+</ul>
+
+<p>We will use data volumes.</p>
+
+<p>The explanation for what exactly has been done with the above command is given in the <strong>Quick Explanation</strong> section above</p>
+
+<h2 id="the-dockerignore-file">The .dockerignore file</h2>
+<p>When we build an image from a Dockerfile using the docker build command the docker-daemon will create a context. That context contains everything in the directory you executed the command in.
+The .dockerignore file allows us to exclude files from the context like a .gitignore file allow you to exclude files from your git repository.
+It helps to make build faster and lighter by excluding from the context big files or repository that are not used in the build.
+<a href="https://stackoverflow.com/questions/31789770/what-files-are-the-dockerignore-work-on">Source</a></p>
+
+<p>So we add</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>node_modules/
+npm-debug.log
+</code></pre></div></div>
+<p>to the .dockerignore file to prevent our local modules and debug logs from being copied onto our Docker image and possibly overwriting modules installed within our image.</p>
+
+<p><br /></p>
+
+<h2 id="how-to-use">How to use</h2>
+<ol>
+  <li>
+    <p>Clone my <a href="https://github.com/krithikvaidya/WEC-Docker-Task">solution</a> repository to your local machine</p>
+  </li>
+  <li>
+    <p>Make sure you have <a href="https://docs.docker.com/install/">Docker</a> installed on your local machine</p>
+  </li>
+  <li>
+    <p>Install <a href="https://docs.docker.com/compose/install/">Docker Compose</a></p>
+  </li>
+  <li>
+    <p>Open a terminal, cd to this Docker-Task folder</p>
+  </li>
+  <li>Run
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo docker-compose up --build
+</code></pre></div>    </div>
+  </li>
+  <li>If everything goes fine, your console will finally output -
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker-node-mongo | MongoDB Connected
+</code></pre></div>    </div>
+    <p>If you get a MongoNetworkError, restarting docker usually fixes it. If you get an error saying Mongo is unable to listen at port 27017,</p>
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo systemctl restart docker
+</code></pre></div>    </div>
+  </li>
+  <li>Test the application by making a GET request to
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>localhost:1234/products/test 
+</code></pre></div>    </div>
+    <p>(by using <a href="https://www.getpostman.com/">Postman</a> or just simply visiting the link on your browser). You should be see the following text -</p>
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Greetings from the Test controller!
+</code></pre></div>    </div>
+    <p>verifying that our app was properly setup.</p>
+  </li>
+  <li>
+    <p>You can now make <strong>GET, POST, PUT, DELETE</strong> requests to this
+running server using <strong>Postman</strong> and the procedure followed in <a href="https://codeburst.io/writing-a-crud-app-with-node-js-and-mongodb-e0827cbbdafb">this article</a></p>
+  </li>
+  <li>If you wish to run the MongoDB shell for the app’s database, open up a new terminal window, cd to this Docker-Task folder,
+and making sure that the container is running, type
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mongo
+</code></pre></div>    </div>
+    <p>An interactive mongo shell should open up.</p>
+  </li>
+</ol>
+
+<p>(Alternatively, we could have added the <em>–detached</em> parameter while running our <em>docker-compose up</em> command, which would have caused our container to run in the background, letting us type 
+commands in the same terminal window. So we could have run the <em>mongo</em> command without opening another terminal window)</p>
+
+<h2 id="quick-explanation">Quick Explanation</h2>
+<p>Since our app consists of two different components (the main Node.js app and our MongoDB database), we will need two different Docker containers for each of them. To make these two components work together like a single unit, we use create a Docker Compose file(<strong>docker-compose.yml</strong>). Compose is a tool for defining and running multi-container Docker applications.</p>
+
+<p>Using Compose is basically a three-step process:</p>
+
+<ol>
+  <li>
+    <p>Define your app’s environment with a Dockerfile so it can be reproduced anywhere.</p>
+  </li>
+  <li>
+    <p>Define the services that make up your app in docker-compose.yml so they can be run together in an isolated environment.</p>
+  </li>
+  <li>
+    <p>Run</p>
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo docker-compose up --build
+</code></pre></div>    </div>
+    <p>and Compose starts and runs our entire app.
+We can verify that, in our case, two containers have been create by running</p>
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo docker container ls
+</code></pre></div>    </div>
+    <p>which will display the details of currently running containers, that looks similar to this:</p>
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                      NAMES
+7c0e58ae932a        docker_app          "docker-entrypoint.s…"   15 seconds ago      Up 13 seconds       0.0.0.0:1234-&gt;3000/tcp     docker-node-mongo
+540fe6382bf7        mongo               "docker-entrypoint.s…"   15 seconds ago      Up 14 seconds       0.0.0.0:27017-&gt;27017/tcp   mongo
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<h2 id="data-persistence">Data Persistence</h2>
+<p>Note the very last configuration command written under our <em>mongo</em> service:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    volumes:
+        - /data/db
+</code></pre></div></div>
+<p>This maps the data storage location of our container to the directory <em>/data/db</em> (relative to the 
+directory in which this <em>docker-compose.yml</em> file resides)
+This ensures that whatever the data volume the container creates persists inside the <em>/data/db</em> directory even
+when the container has stopped running. So, the next time we start up the container, the same volume data will still be restored.</p>
+
+<p>To see exactly which directory of the container was mapped to the <em>/data/db</em> directory, run the command</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo docker inspect mongo
+</code></pre></div></div>
+<p>Where <em>mongo</em> is the name of the container in which our <em>MongoDB</em> is running(as specified in the <em>container-name</em> attribute of the <em>mongo</em> service in our <strong>docker-compose.yml</strong>)</p>
+
+<p>In the JSON-format output, look for a key named <em>“Mounts”</em>. You should find</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{
+    "Type": "volume",
+    "Name": "0ec01aec488629f740132dc655ad8474c96980b1d0c8d2208aecb30bb2384598",
+    "Source": "/var/lib/docker/volumes/0ec01aec488629f740132dc655ad8474c96980b1d0c8d2208aecb30bb2384598/_data",
+    "Destination": "/data/db",
+    ...
+    ...
+    ...
+    ...
+}
+</code></pre></div></div>
+
+<p>This tells you that when you mounted a volume (<em>/data/db</em>), it has created a folder /var/lib/… for you, which is where it puts all the files, etc that you would have created in that volume.</p>
+
+<p><br /></p>
+
+<h1 id="references">References</h1>
+<p><a href="https://docs.docker.com/get-started/">https://docs.docker.com/get-started/</a>
+<a href="https://docs.docker.com/engine/docker-overview/">https://docs.docker.com/engine/docker-overview/</a>
+<a href="https://docs.docker.com/compose/gettingstarted/">https://docs.docker.com/compose/gettingstarted/</a>
+<a href="https://docs.docker.com/engine/reference/builder/">https://docs.docker.com/engine/reference/builder/</a>
+<a href="https://opensource.com/resources/what-docker">https://opensource.com/resources/what-docker</a>
+<a href="https://www.youtube.com/watch?v=YFl2mCHdv24">https://www.youtube.com/watch?v=YFl2mCHdv24</a>
+<a href="https://www.youtube.com/watch?v=Kyx2PsuwomE">https://www.youtube.com/watch?v=Kyx2PsuwomE</a>
+<a href="https://www.youtube.com/watch?v=hP77Rua1E0c">https://www.youtube.com/watch?v=hP77Rua1E0c</a>
+<a href="https://www.codementor.io/blog/docker-technology-5x1kilcbow">https://www.codementor.io/blog/docker-technology-5x1kilcbow</a></p>
+:ET

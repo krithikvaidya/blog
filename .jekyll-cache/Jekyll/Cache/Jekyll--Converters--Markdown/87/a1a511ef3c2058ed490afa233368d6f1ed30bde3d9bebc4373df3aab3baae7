@@ -1,4 +1,4 @@
-I"w<ul class="posts">
+I"Ç	<ul class="posts">
   
 
     
@@ -6,8 +6,29 @@
     
 
     <li itemscope="">
-      <a href="/networks/light-fidelity/A-Comprehensive-Guide-to-LiFi.html">A Comprehensive Guide to Li-Fi</a>
+      <a href="/A-Comprehensive-Guide-to-LiFi.html">A Comprehensive Guide to Li-Fi</a>
       <p class="post-date"><span><i class="fa fa-calendar" aria-hidden="true"></i> October 2 - <i class="fa fa-clock-o" aria-hidden="true"></i> 
+  
+  
+    11 minute read
+  
+
+
+
+</span></p>
+    </li>
+
+  
+
+    
+      
+      
+      
+    
+
+    <li itemscope="">
+      <a href="/Dockerizing-A-Node-Mongo-Application.html">Dockerizing a Node.js + MongoDB Web-App</a>
+      <p class="post-date"><span><i class="fa fa-calendar" aria-hidden="true"></i> August 27 - <i class="fa fa-clock-o" aria-hidden="true"></i> 
   
   
     11 minute read
