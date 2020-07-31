@@ -16,7 +16,7 @@ The use of visible light to transmit data allows Li-Fi to offer several advantag
 
 ## How It Works
 
-![A demo of Li-Fi Communication](/assets/img/A-Comprehensive-Guide-to-LiFi/2.jpg)
+![A demo of Li-Fi Communication](/blog/assets/img/A-Comprehensive-Guide-to-LiFi/2.jpg)
 >Credits: [https://www.weforum.org/agenda/2015/10/could-li-fi-be-the-future-of-the-internet/](https://www.weforum.org/agenda/2015/10/could-li-fi-be-the-future-of-the-internet/)
 
 *LED's* are light sources based on semiconductors which can amplify and switch their light intensity rapidly (within nanoseconds, in fact); therefore, LED cells can modulate a massive number of signals per second without the human eye even noticing! Since a robust Li-Fi system requires extremely high rates of light output, this makes LED bulbs ideal for implementing Li-Fi transmission. Communication using Li-Fi is just as seamless as other radio systems, allowing the users to be connected wherever there is Li-Fi enabled light.
@@ -25,7 +25,7 @@ The changes in light intensity from the LED light source are interpreted by the 
 
 A helpful *infographic* illustrating the working of Li-Fi is attached below:
 
-![How Li-Fi Works?](/assets/img/A-Comprehensive-Guide-to-LiFi/3.png)
+![How Li-Fi Works?](/blog/assets/img/A-Comprehensive-Guide-to-LiFi/3.png)
 >Credits:[https://www.cdnsol.com/blog/li-fi-light-based-communication-technology/](https://www.cdnsol.com/blog/li-fi-light-based-communication-technology/)
 
 You can also watch a live demo of the technology [here](https://youtu.be/NaoSp4NpkGg?t=349) 
@@ -53,14 +53,14 @@ Li-Fi has the advantage of being useful in electromagnetic sensitive areas such 
 
 Both Wi-Fi and Li-Fi transmit data over the electromagnetic spectrum, but whereas Wi-Fi utilizes radio waves, Li-Fi uses visible, ultraviolet and infrared waves. This is advantageous because the US Federal Communications Commission has warned of a potential **spectrum crisis** caused by Wi-Fi being close to full capacity. Li-Fi has almost no limitations on capacity, since the entire visible light + infrared spectrum is about 2,600 times larger than the entire radio frequency spectrum.
 
-![Electromagnetic Spectrum](/assets/img/A-Comprehensive-Guide-to-LiFi/4.jpg)
+![Electromagnetic Spectrum](/blog/assets/img/A-Comprehensive-Guide-to-LiFi/4.jpg)
 >Credits:[https://www.sciencedirect.com/science/article/pii/S2405428317300151](https://www.sciencedirect.com/science/article/pii/S2405428317300151)
 
 **Security:** Since LiFi makes use of the visible light spectrum, it cannot penetrate through optically opaque objects like walls, thus adding another level of defense against unauthorised access (RF-based communication waves can easily pass through walls). Also, the existing security protocols for encryption and authentication in other types of communications can be be applied to Li-Fi systems too.
 
 **Speed & Bandwidth:** At the current state-of-the-art, Li-Fi can deliver multiple Gbps of speed in mobile devices. This next generation technology will drive wireless beyond any current capability, opening up unprecedented bandwidth. With a single LED, peak transmission speeds of **8 Gbps** have been recorded.
 
-![Li-Fi faster than Wi-Fi](/assets/img/A-Comprehensive-Guide-to-LiFi/5.jpeg)
+![Li-Fi faster than Wi-Fi](/blog/assets/img/A-Comprehensive-Guide-to-LiFi/5.jpeg)
 >Credits:[https://technicalera21.blogspot.com/2018/12/li-fi-100-times-faster-than-wifi.html](https://technicalera21.blogspot.com/2018/12/li-fi-100-times-faster-than-wifi.html)
 
 **Reliability and Low Latency:** Li-Fi provides *enhanced reliability* enabling interference-free communications. It currently offers latency that is a factor of three times lower than Wi-Fi, which can help enable automation and applications such as Augmented Reality and Virtual Reality.
@@ -78,11 +78,11 @@ Both Wi-Fi and Li-Fi transmit data over the electromagnetic spectrum, but wherea
 2. A **BMW** manufacturing plant located in Munich, Germany [tested](https://www.eenewseurope.com/news/li-fi-passes-industrial-test-bmws-robotic-tools) the operation of Li-Fi in an industrial environment with mobile robots, and the results were very positive. In fact, BMW's project manager hopes for the scaling-down of Li-Fi transceivers for its widespread adoption in manufacturing plants.
 
 3. In August 2018, Kyle Academy, a secondary school in Scotland, trialed Li-Fi within the school. Eight LiFi-enabled LED ceiling bulbs using rapid on-off patterns were set up to transmit data to USB Li-Fi receivers plugged into the students' laptops.
-![Scotland School Li-Fi Test](/assets/img/A-Comprehensive-Guide-to-LiFi/6.jpg)
+![Scotland School Li-Fi Test](/blog/assets/img/A-Comprehensive-Guide-to-LiFi/6.jpg)
 > Credits:[https://www.fibre-systems.com/news/lifi-technology-piloted-scotland-s-south-ayrshire-school](https://www.fibre-systems.com/news/lifi-technology-piloted-scotland-s-south-ayrshire-school)
 4. Recently, in June 2019, French company Oledcomm tested their Li-Fi technology at the 2019 Paris Air Show. Oledcomm hopes to collaborate with Air France in the future to test Li-Fi on an aircraft in-flight. In-flight internet (on the infrequent even that it is offered) is often unreliable and slow. Oledcomm wants to take things up a notch by making high-speed LiFi available on Air France and KLM flights, promising in-cabin bandwidths of 100Mbps. Currently, even the fastest WiFi available on domestic airlines in the US stalls at around 15 Mbps. The actual implementation of the the technology, named LiFiMAX, should be available on Air France flights by the end of the year. [Here's a link](https://www.youtube.com/watch?v=71Td0HQ7lx0) to a demo of the technology.
 
-![Li-Fi in Airplanes](/assets/img/A-Comprehensive-Guide-to-LiFi/7.jpg)
+![Li-Fi in Airplanes](/blog/assets/img/A-Comprehensive-Guide-to-LiFi/7.jpg)
 >Credits: [https://www.fasttracks.eu/li-fi-technology-how-it-works-and-its-applications/](https://www.fasttracks.eu/li-fi-technology-how-it-works-and-its-applications/)
 
 Using Li-Fi, aircraft passengers can access high-speed internet via lights fitted over their seats. Li-Fi can also be used to integrate the In-Flight Entertainment System with the passengers' smartphones. Oledcomm also a manufactures a [range of Li-Fi devices](https://www.oledcomm.net/our-products/#1529847210185-42f3d5b8-a603), such as Li-Fi enabled desk lamps, hospital lights and street lights.
@@ -104,7 +104,7 @@ Li-Fi is an innovative technology that is poised to impact many industries. It c
 
 In the not-too-far future, it isn't difficult to imagine the modest LED lightbulb serving a multitude of applications - it will be an integral part of the emerging smart cities and smart homes. This could possibly lead to the merging of the lighting industry with the wireless industry. However, an important prerequisite for the large-scale adoption of any technology is the availability of standards. In this regard, the IEEE *802.11bb* Task Force for the development of a Global Standard for Li-Fi Communication was set-up in 2018.
 
-![Generations of Cellular Communications](/assets/img/A-Comprehensive-Guide-to-LiFi/8.jpg) 
+![Generations of Cellular Communications](/blog/assets/img/A-Comprehensive-Guide-to-LiFi/8.jpg) 
 >Credits:[https://ars.els-cdn.com/content/image/1-s2.0-S2405428317300151-gr8.jpg](https://ars.els-cdn.com/content/image/1-s2.0-S2405428317300151-gr8.jpg)
 
 Although there’s still a long way to go to make this technology a commercial success, it promises a great potential in the field of wireless internet. The commercial deployment of Li-Fi will result in inexpensive and fast internet service world-wide.  Widespread migration to cleaner, greener and safer communication networks such as Li-Fi will have a positive impact on the current global climate crisis too. 
@@ -113,7 +113,7 @@ Although there’s still a long way to go to make this technology a commercial s
 
 [Gigabit Li-Fi integration into our smartphones](https://purelifi.com/wp-content/uploads/2019/04/Why-Design-In-Gigabit-LiFi-pureLiFi.pdf)
 
-![Gigabit Li-Fi integration into our smartphones](/assets/img/A-Comprehensive-Guide-to-LiFi/9.png)
+![Gigabit Li-Fi integration into our smartphones](/blog/assets/img/A-Comprehensive-Guide-to-LiFi/9.png)
 
 [LiFi-XC: The current state-of-the-art amongst consumer-oriented LiFi devices](https://www.youtube.com/watch?v=yzWNB9CkpmA)  
 [Press Release of the Global LiFi Congress 2019](https://www.lificongress.com/Press-release-93-2.html)  
