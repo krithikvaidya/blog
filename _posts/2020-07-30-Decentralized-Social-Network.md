@@ -107,3 +107,11 @@ The base paper suggested the use of PubSub (Publish/Subscribe) for the messaging
 In this article, we have explored the basics of Decentralized apps and the IPFS framework. An overview of the architecture of our implementation of a Social Network in a Decentralized setting was also given.
 The repository for this project can be found [here](https://github.com/IEEE-NITK/decentralized-social-network/), which also contains screenshots of the application in action. The source code is heavily commented for ease of understanding.
 
+## References
+
+[https://medium.com/zkcapital/ipfs-the-distributed-web-e21a5496d32d](https://medium.com/zkcapital/ipfs-the-distributed-web-e21a5496d32d)
+[https://ipfs.io/](https://ipfs.io/)
+[https://github.com/ipfs/js-ipfs](https://github.com/ipfs/js-ipfs)
+[https://orbitdb.org/](https://orbitdb.org/)
+
+
