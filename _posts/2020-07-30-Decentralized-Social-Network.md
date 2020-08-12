@@ -113,5 +113,4 @@ The repository for this project can be found [here](https://github.com/IEEE-NITK
 [https://ipfs.io/](https://ipfs.io/)
 [https://github.com/ipfs/js-ipfs](https://github.com/ipfs/js-ipfs)
 [https://orbitdb.org/](https://orbitdb.org/)
-
-
+[https://courses.csail.mit.edu/6.857/2019/project/17-Foss-Pfeiffer-Woldu-Williams.pdf](https://courses.csail.mit.edu/6.857/2019/project/17-Foss-Pfeiffer-Woldu-Williams.pdf)
