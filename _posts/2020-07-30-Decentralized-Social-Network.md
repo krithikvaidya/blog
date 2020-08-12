@@ -36,7 +36,7 @@ The implementation of IPFS itself is a very vast topic. In a sentence, IPFS can 
 
 IPFS allows each user (peer) to host whatever data they'd like locally. Every file stored on the IPFS has a unique hash value (that is generated through cryptographic signing), called as the **Content Identifier (CID)** (a long string, like for eg., QmwArsqEwjUoLOq2gVtTUg2tC3jNf5Htm2ZeO4rKnsFF3FDp46A). The CID is calculated from the contents of the file (or folder), and is a unique string for a given file. Two files with the same content but hosted on different nodes will have the exact same CID. 
 
-<figure class="image" style="text-align: center; color: gray;"><img src="/assets/img/Decentralized-Social-Network/3.png" alt="CID sample"><figcaption>CID for a sample file, <em>im.png</em></figcaption></figure>
+<figure class="image" style="text-align: center; color: gray;"><img src="/blog/assets/img/Decentralized-Social-Network/3.png" alt="CID sample"><figcaption>CID for a sample file, <em>im.png</em></figcaption></figure>
 
 This forms the basis for content-based addressing that is used by IPFS to locate data on a decentralized network. Since files are identified by their content and not their location (for e.g. with a URL), this system is called “content addressing”. A node on the IPFS network can ask all the peers it’s connected to whether they have a file with the required content identifier, and if any of them does, they respond with the file. This wouldn't be possible without a quick to compute, short and unique cryptographic hash for every file.
 
@@ -71,7 +71,7 @@ For the functionality of adding friends,
 
 When a user joins the decentralised social network, the following steps happen on their local system as shown below:
 
-![Startup](/assets/img/Decentralized-Social-Network/1.png)
+![Startup](/blog/assets/img/Decentralized-Social-Network/1.png)
 
 - On starting up our decentralised social network web-app, the user starts up their node on the IPFS network
 - On starting up their node in the IPFS network, a unique peer ID is generated which is used to identify each user (once this is generated for a particular user, it never changes).
@@ -81,7 +81,7 @@ When a user joins the decentralised social network, the following steps happen o
 
 The various features of the decentralised social network are shown below. The features can be classified into 3 broad categories - adding friends through usernames, viewing posts and chatting. 
 
-![Features](/assets/img/Decentralized-Social-Network/2.png)
+![Features](/blog/assets/img/Decentralized-Social-Network/2.png)
 
 The implemented system has no central location of data and instead multiple copies of data are present on different nodes of the network. Accessing a person's data first involves mapping their username to the root of the person's file system hash and accessing their data from that. The mapping pairs of username - root folder CID is stored in a decentralized database, Orbit-DB. When a node joins a network, it immediately adds the username - root folder hash pair to the database.
 
