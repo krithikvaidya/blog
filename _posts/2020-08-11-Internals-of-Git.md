@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "An Overview of the Internals of Git"
+title: "Git's Data Model: Explanation and Hands-on"
 author: "Krithik Vaidya"
 tags: [git, version-control]
 image: /Internals-of-Git/git-logo.jpg
