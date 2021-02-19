@@ -3,7 +3,7 @@ layout: post
 title: "A Comprehensive Guide to Li-Fi"
 author: "Krithik Vaidya"
 tags: [networking, light-fidelity]
-image: A-Comprehensive-Guide-to-LiFi/1.jpeg
+image: /A-Comprehensive-Guide-to-LiFi/1.jpeg
 ---
 
 ## Introduction
