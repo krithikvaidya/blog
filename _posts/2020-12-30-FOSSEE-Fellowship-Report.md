@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "FOSSEE Fellowship Report"
+title: "FOSSEE Fellowship Report - Building an Event Logging System"
 author: "Krithik Vaidya"
 tags: [fossee, spoken-tutorial, open-source, fellowship]
 image: FOSSEE-Fellowship-Report/logo.png
