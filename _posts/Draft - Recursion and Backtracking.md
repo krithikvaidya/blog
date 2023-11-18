@@ -8,7 +8,7 @@ image: A-Comprehensive-Guide-to-LiFi/1.jpeg
 
 ## Introduction
 
-One of my motivations to write this article is to primarily get a grip on the topics of Recursion,Backtracking and consequently, Dynamic Programming. These are topics that have always been hard for me to get confidence in. There will be two articles, this one focusing on Recursion and Backtracking, and the next one on Dynamic Programming.
+One of my motivations to write this article is to primarily get a grip on the topics of Recursion, Backtracking and consequently, Dynamic Programming. These are topics that have always been hard for me to get confidence in. There will be two articles, this one focusing on Recursion and Backtracking, and the next one on Dynamic Programming.
 
 ## What is Recursion
 
