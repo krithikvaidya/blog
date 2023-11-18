@@ -10,8 +10,10 @@
 #   sort_field: 'date'
 #   sort_reverse: true
 
-# jekyll-paginate configuration
-paginate:            5
+pagination:
+  enabled: true
+  per_page: 5  # Adjust the number of posts per page as needed
+  sort_field: 'title'
 
 # Build settings
 markdown:            kramdown
