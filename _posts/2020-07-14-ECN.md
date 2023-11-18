@@ -1,0 +1,218 @@
+---
+layout: post
+title: "Explicit Congestion Notification (ECN) - Introduction and Exploration"
+author: "Krithik Vaidya"
+tags: [networking, ecn, congestion-control]
+image: /ECN/ecn_bits_tcp.jpg
+---
+
+
+## Introduction to ECN
+
+Explicit Congestion Notification (or ECN), enables end-to-end network congestion
+notification between a client and a server, without the dropping of packets. It is an extension
+to the TCP/IP protocol. When a congestion is encountered, instead of dropping packets,
+an ECN-aware router can ‘mark’ the packets in order to signal an incoming congestion
+in the network. The receiver of such a marked packet echoes this message back to the
+sender, who then reduces their data transmission rate so as to prevent congestion and
+dropping of packets in the network.
+
+In 2012, only about 8.5% of the most popular websites supported ECN. But as of 2017, the number had increased to over 70%, and possibly even more in the  years.
+
+#### Working
+
+ECN requires specific support at both the Internet layer and the transport layer for the following reasons:
+
+- In TCP/IP, routers operate within the Internet layer, while the transmission rate is handled by the endpoints at the transport layer.
+- Congestion may be handled only by the transmitter, but since it is known to have happened only after a packet was sent, there must be an echo of the congestion indication by the receiver to the transmitter.
+
+#### Initial Communication of ECN Support between Client and Server:
+In the TCP header, the first two bits in byte 14 are defined as flags for the use of ECN,
+namely the ECE (Echo - Congestion Encountered) and CWR (Congestion Window
+Reduced) bits.
+
+![TCP Header with ECN related bits](/blog/assets/img/ECN/ecn_bits_tcp.jpg)
+>Credits: [https://slideplayer.com/slide/4764320/](https://slideplayer.com/slide/4764320/)
+
+According to the convention, a TCP client indicates that it supports ECN by
+setting ECE=CWR=1 in the SYN, and an ECN-enabled server confirms ECN support by
+setting ECE=1 and CWR=0 in the SYN/ACK packet.
+
+#### ECN Usage During Transmission:
+Once ECN has been negotiated with the receiver at the transport layer, an ECN sender
+can set two possible codepoints ( ECT(0) or ECT(1) ) in the IP header to indicate an
+ECN-capable transport (ECT). 
+
+![ECN Related bits in IPv4 Header](https://1.bp.blogspot.com/-tfuhIb-blCE/T5QidPZHTgI/AAAAAAAAEoQ/s5Prfka2gZ4/s1600/a.jpg)
+>Credits: [http://cisco-telepresence.blogspot.com/2012/05/explicit-congestion-notification.html](http://cisco-telepresence.blogspot.com/2012/05/explicit-congestion-notification.html)
+
+If both ECN bits are zero, the packet is considered to have
+been sent by a Not-ECN-capable Transport ( Not-ECT ). When a network node
+experiences congestion, it will occasionally either drop or mark a packet, with the choice
+depending on the packet's ECN codepoint. If the codepoint is Not-ECT, only drop is
+appropriate. If the codepoint is ECT(0) or ECT(1), the node can mark the packet by
+setting both ECN bits , which is termed 'Congestion Experienced' (CE), or loosely a
+'congestion mark'.
+
+On reception of a CE-marked packet at the IP layer, the Data Receiver starts to set the
+Echo Congestion Experienced (ECE) flag continuously in the TCP header of ACKs,
+which ensures the signal is received reliably even if ACKs are lost. The TCP sender
+confirms that it has received at least one ECE signal by responding with the Congestion
+Window Reduced (CWR) flag, which allows the TCP receiver to stop repeating the
+ECN-Echo flag.
+
+
+## Inspecting ECN Use in Practice with Wireshark
+
+In this analysis, we are visiting https://www.wikiversity.com, which runs on the HTTPS protocol. HTTP and HTTPS use TCP as the Transport Layer protocol, so there is a possibility of ECN support here. Analysis of incoming/outgoing traffic to this host in Wireshark can be done by setting the Capture Filter appropriately:
+
+
+![Host Capture Filter](/blog/assets/img/ECN/capture_filter.png)
+
+
+**ECN Related Details**: Initially, a TCP SYN packet is sent with the ECE and CWR bits set to 1,
+which indicates that our client system **supports ECN** according to the convention.
+
+
+![Client ECN Support](/blog/assets/img/ECN/client_ecn.png)
+
+
+The Wikiversity server also **supports ECN**, which is indicated by the *ECE* bit being **1** and
+*CWR* bit being **0** in the **SYN+ACK** response.
+
+
+![Website ECN Support](/blog/assets/img/ECN/website_ecn.png)
+
+
+## Script to check for ECN support
+
+The following Python3 script checks whether the websites in the entered website list support ECN or not.  Note that the support of ECN in the connection between you (the client) and the server also depends on whether the entire underlying network infrastructure from the client-side till the server (OS, LAN, ISP's infrastructure, server, etc.) supports ECN.
+
+Ensure you have *scapy* installed by running  
+```pip install --pre scapy[complete]```
+
+**Script:**
+
+```python
+
+"""
+The following is a python script that takes a URL
+input from the command line, and using the
+'scapy' python library, creates a TCP SYN
+request to the website with the ECN-Echo and
+CWR flags set to 1. The script then receives the
+response, and checks if the SYN+ACK+ECN bits are
+set in the TCP flags of the response. If the SYN+ACK
+bits are set, it indicates that this is the response 
+we are looking for to check for server-side ECN support; 
+if the ECN-Echo bit is set in this packet, it
+indicates that the website supports ECN.
+
+Writes the output to a file name ECN_Support.txt
+
+This script supports multiple websites - enter multiple websites
+as command line arguments to check their ECN support.
+
+How to use:
+Ensure you have python3.6+ installed
+
+Install scapy by running
+pip install --pre scapy[complete]
+
+Usage: 
+sudo python3 script.py [website_list]
+
+Example:
+sudo python3 script.py www.facebook.com www.twitter.com
+
+"""
+
+import sys  # to get the command line arguments
+from scapy.all import *  # we will use the scapy library to create and receive
+                         # the packets.
+
+
+"""
+This function creates and receives packets for 
+all the websites entered in the command line
+arguments, checks for their validity and returns
+all the response packets.
+"""
+def get_packet(address):
+    if len(address) == 0:
+        print('Enter atleast one website!')
+        return None
+
+    recvd_pkts = []
+
+    try:
+        for website in address:
+            p = sr1(IP(dst=website)/TCP(flags="SEC"))
+            recvd_pkts.append(p)
+    except:
+        print(f'{website} is an invalid address!')  # if any of the websites entered are invalid.
+        return None
+    
+    return recvd_pkts  # returns the list of received packets.
+
+
+"""
+This function checks if the packet received has
+the correct TCP headers for ECN support set or not.
+"""
+def check_packet(p):  # this function checks if the correct TCP flags are
+                      # set in the response packet.
+
+    if p[TCP].flags == 'SAE':  # are the SYN + ACK + ECN bits set?
+        return 'YES'
+    else:
+        return 'NO'
+
+
+"""
+Driver function for the program
+"""
+def main():
+    address = sys.argv[1:]  # get all the websites entered as command
+                            # line arguments in a list form.
+    recvd_pkts = get_packet(address)
+
+    if recvd_pkts is None:  # one or more addresses was incorrect.
+        exit()
+
+    ecn_support = []
+
+    for packet in recvd_pkts:
+        ecn_support.append(check_packet(packet))  # checks for ECN support and
+                                                  # appends 'YES' or 'NO'
+
+    # only after checking if all entered websites are valid and
+    # getting the response packets from all of them, we
+    # write to the file.
+    with open("ECN_Support.txt", "a") as file:
+        for i in range(len(ecn_support)):
+            file.write(str(address[i]) + ' ' + recvd_pkts[i][IP].src + ' ' + ecn_support[i] + '\n')
+
+
+# this program should only work when executed directly
+# from the command line. When it is, the main() function
+# is initially called with the help of the below code.
+if __name__ == '__main__':  
+    main()
+
+```
+
+## Conclusion
+
+In this article, we have explored what ECN is, it's technical implementation details, a Wireshark analysis of a real-world scenario and finally a script to check ECN support of any website.
+
+
+#### References
+
+[https://en.wikipedia.org/wiki/Explicit_Congestion_Notification](https://en.wikipedia.org/wiki/Explicit_Congestion_Notification)  
+[https://tools.ietf.org/id/draft-ietf-tcpm-accurate-ecn-05.html](https://tools.ietf.org/id/draft-ietf-tcpm-accurate-ecn-05.html)
+
+#### Further Reading
+
+[Enhanced ECN](https://ieeexplore.ieee.org/document/9058340)  
+[Deploying ECN for your network](https://cumulusnetworks.com/blog/explicit-congestion-notification/)
