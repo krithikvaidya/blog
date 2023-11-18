@@ -6,11 +6,6 @@ disqus:
 # If you are not using Google Analytics, please change 'google-ID' to an empty string
 google-ID: 'UA-172138541-1'
 
-menu:
-- {name: 'Main Page', path: '', url: ''}
-- {name: 'All Articles', path: 'menu', url: 'all_posts.html'}
-- {name: 'About', path: 'menu', url: 'about.html'}
-
 # Available social icons are powered by Font Awesome, so you can use any icon that they offer
 social:
 - {icon: 'github', link: 'https://www.github.com/krithikvaidya'}
